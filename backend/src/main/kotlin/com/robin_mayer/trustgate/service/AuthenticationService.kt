@@ -47,7 +47,9 @@ class AuthenticationService (
 
 	fun signIn(input: LoginDTO): AuthDataDTO {
 		val user = userRepository.findUserByEmail(input.email) ?: throw Exception("User not found")
-		// todo: implement
+		if(!passwordEncoder.matches(input.password, user.password)) {
+			throw Exception("Invalid password")
+		}
 
 		val accessToken = tokenService.generateAccessToken(
 			userId = user.userId,
