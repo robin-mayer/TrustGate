@@ -5,6 +5,7 @@ import com.robin_mayer.trustgate.model.dto.request.LoginDTO
 import com.robin_mayer.trustgate.model.dto.request.SignUpDTO
 import com.robin_mayer.trustgate.model.dto.response.AuthDataDTO
 import com.robin_mayer.trustgate.repository.UserRepository
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -15,6 +16,12 @@ class AuthenticationService (
 	private val tokenService: TokenService,
 	private val userRepository: UserRepository
 ) {
+	@Value("\${authentication.jwt.expires_in}")
+	private lateinit var accessTokenExpiresIn: String
+
+	@Value("\${authentication.refresh_token.expires_in}")
+	private lateinit var refreshTokenExpiresIn: String
+
 	fun signUp(input: SignUpDTO) {
 		if(userRepository.existsUserByEmail(input.email)) {
 			throw Exception("User already exists")
@@ -48,11 +55,11 @@ class AuthenticationService (
 
 		val calendarAccessToken = Calendar.getInstance()
 		calendarAccessToken.time = Date()
-		calendarAccessToken.add(Calendar.MINUTE, 30)
+		calendarAccessToken.add(Calendar.MINUTE, accessTokenExpiresIn.toInt())
 
 		val calendarRefreshToken = Calendar.getInstance()
 		calendarRefreshToken.time = Date()
-		calendarRefreshToken.add(Calendar.HOUR, 24 * 60)
+		calendarRefreshToken.add(Calendar.HOUR, 24 * refreshTokenExpiresIn.toInt())
 
 		return AuthDataDTO(
 			accessToken = accessToken,
