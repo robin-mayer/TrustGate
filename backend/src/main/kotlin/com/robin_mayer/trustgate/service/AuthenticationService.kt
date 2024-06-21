@@ -6,15 +6,18 @@ import com.robin_mayer.trustgate.model.dto.request.SignUpDTO
 import com.robin_mayer.trustgate.model.dto.response.AuthDataDTO
 import com.robin_mayer.trustgate.repository.UserRepository
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+
 
 @Service
 @Transactional
 class AuthenticationService (
 	private val tokenService: TokenService,
-	private val userRepository: UserRepository
+	private val userRepository: UserRepository,
+	private val passwordEncoder: PasswordEncoder
 ) {
 	@Value("\${authentication.jwt.expires_in}")
 	private lateinit var accessTokenExpiresIn: String
@@ -36,7 +39,7 @@ class AuthenticationService (
 		val newUser = User(
 			email = input.email,
 			name = input.name,
-			password = input.password,
+			password = passwordEncoder.encode(input.password),
 			verificationCode = tokenService.generateVerificationCode()
 		)
 		userRepository.save(newUser)
