@@ -1,6 +1,6 @@
 package com.robin_mayer.trustgate.controller
 
-import com.robin_mayer.trustgate.service.AuthorizationService
+import com.robin_mayer.trustgate.service.AuthenticationService
 import com.robin_mayer.trustgate.model.dto.request.LoginDTO
 import com.robin_mayer.trustgate.model.dto.request.SignUpDTO
 import com.robin_mayer.trustgate.model.dto.response.AuthDataDTO
@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/auth")
-class AuthorizationController(
-	private val authorizationService: AuthorizationService
+class AuthenticationController(
+	private val authenticationService: AuthenticationService
 ) {
 
 	@PostMapping("/login")
 	fun login(
 		@RequestBody loginDTO: LoginDTO
 	): ResponseEntity<AuthDataDTO> {
-		val authData = authorizationService.signIn(loginDTO)
+		val authData = authenticationService.signIn(loginDTO)
 		return ResponseEntity.ok(authData)
 	}
 
@@ -31,7 +31,7 @@ class AuthorizationController(
 	fun signUp(
 		@RequestBody signUpDTO: SignUpDTO
 	): ResponseEntity<Boolean> {
-		authorizationService.signUp(signUpDTO)
+		authenticationService.signUp(signUpDTO)
 		return ResponseEntity(HttpStatus.CREATED)
 	}
 
@@ -39,7 +39,7 @@ class AuthorizationController(
 	fun verify(
 		@PathVariable verificationCode: String
 	): ResponseEntity<Boolean> {
-		authorizationService.verifyUser(verificationCode)
+		authenticationService.verifyUser(verificationCode)
 		return ResponseEntity(HttpStatus.OK)
 	}
 }

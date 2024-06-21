@@ -11,7 +11,7 @@ import java.util.*
 
 @Service
 @Transactional
-class AuthorizationService (
+class AuthenticationService (
 	private val tokenService: TokenService,
 	private val userRepository: UserRepository
 ) {
